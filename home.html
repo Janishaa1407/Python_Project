@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Sort Visualizer</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #array {
+            display: flex;
+            align-items: flex-end;
+            margin: 20px;
+        }
+        .bar {
+            width: 20px;
+            margin: 0 1px;
+            background-color: teal;
+            transition: height 0.2s;
+        }
+        #inputField {
+            margin: 10px;
+        }
+        body{
+    
+    margin:0;
+    height:100vh;
+    background-image: url("https://assets.awwwards.com/awards/external/2017/04/3D%20Audio%20Visualizer%20by%20Matt%20DesLauriers_static.jpeg");
+    background-size:cover;
+    background-repeat:no-repeat;
+    background-position: center;
+    
+}
+    </style>
+</head>
+<body>
+    <h1>Quick Sort Visualizer</h1>
+    <input type="text" id="inputField" placeholder="Enter numbers separated by commas">
+    <button id="sortButton">Sort</button>
+    
+    <div id="array"></div>
+
+    <script>
+        document.getElementById('sortButton').onclick = () => {
+            const input = document.getElementById('inputField').value;
+            const array = input.split(',').map(Number);
+            drawArray(array);
+            quickSort(array, 0, array.length - 1);
+        };
+
+        function drawArray(array) {
+            const container = document.getElementById('array');
+            container.innerHTML = '';
+            array.forEach(num => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = `${num * 10}px`;
+                container.appendChild(bar);
+            });
+        }
+
+        async function quickSort(array, low, high) {
+            if (low < high) {
+                const pivotIndex = await partition(array, low, high);
+                await quickSort(array, low, pivotIndex - 1);
+                await quickSort(array, pivotIndex + 1, high);
+            }
+        }
+
+        async function partition(array, low, high) {
+            const pivot = array[high];
+            let i = low - 1;
+            const bars = document.getElementsByClassName('bar');
+
+            for (let j = low; j < high; j++) {
+                bars[j].style.backgroundColor = 'red'; // Highlight comparison
+                await sleep(200); // Wait for a moment
+                if (array[j] < pivot) {
+                    i++;
+                    [array[i], array[j]] = [array[j], array[i]];
+                    drawArray(array); // Redraw array after swap
+                    await sleep(200); // Wait for a moment
+                }
+                bars[j].style.backgroundColor = 'teal'; // Reset color
+            }
+            [array[i + 1], array[high]] = [array[high], array[i + 1]];
+            drawArray(array); // Redraw array after pivot swap
+            return i + 1;
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    </script>
+</body>
+</html>

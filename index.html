@@ -1,0 +1,78 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble Sort Visualizer</title>
+    <style>
+        #array {
+            display: flex;
+            justify-content: center;
+            margin: 20px;
+        }
+        .bar {
+            width: 20px;
+            margin: 2px;
+            background-color: teal;
+            transition: height 0.5s;
+        }
+        body{
+            margin:0;
+            height:100vh;
+            background-image: url("https://wallpapers.com/images/hd/light-color-background-swzb97w5pxngu8yv.jpg");
+            background-size:cover;
+            background-repeat:no-repeat;
+            background-position: center;
+    
+}
+    </style>
+</head>
+<body>
+    <center>
+    <h1>Bubble Sort Visualizer</h1>
+    <input type="text" id="arrayInput" placeholder="Enter numbers separated by commas" />
+    
+    <button onclick="startSorting()">Sort</button>
+    <div id="array"></div>
+
+    <script>
+        function createBars(array) {
+            const arrayDiv = document.getElementById('array');
+            arrayDiv.innerHTML = '';
+            array.forEach(num => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = `${num * 10}px`; // Scale for visibility
+                arrayDiv.appendChild(bar);
+            });
+        }
+
+        async function startSorting() {
+            const input = document.getElementById('arrayInput').value;
+            const array = input.split(',').map(Number);
+            createBars(array);
+
+            const response = await fetch('/sort', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ array })
+            });
+
+            const result = await response.json();
+            visualizeSorting(result.steps);
+        }
+
+        async function visualizeSorting(steps) {
+            for (let i = 0; i < steps.length; i++) {
+                createBars(steps[i]);
+                await new Promise(resolve => setTimeout(resolve, 500)); // Delay for visualization
+            }
+            createBars(steps[steps.length - 1]); // Show final sorted array
+        }
+    </script>
+    </center>
+</body>
+</html>
